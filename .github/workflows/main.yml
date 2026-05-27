@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>BookCycle — Sirkulasi Buku Kampus</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f7fb;
+      color: #1a2c3e;
+      padding: 0 0 80px 0;
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.25s ease;
+      padding: 20px 18px 40px 18px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .page.active-page {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2b6e4f, #1e4d6e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .tagline {
+      font-size: 0.8rem;
+      color: #5e7a93;
+      font-weight: 500;
+      background: #eef2f7;
+      padding: 4px 12px;
+      border-radius: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 18px 20px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.02);
+      margin-bottom: 20px;
+      border: 1px solid #eef2f2;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+    .input-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2c3f4f;
+      font-size: 0.9rem;
+    }
+    .input-label i {
+      width: 22px;
+      color: #2b6e4f;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 15px 18px;
+      border: 1.5px solid #e0e8ed;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #ffffff;
+      transition: 0.2s;
+    }
+    textarea {
+      border-radius: 24px;
+      resize: vertical;
+      min-height: 100px;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #2b6e4f;
+      box-shadow: 0 0 0 3px rgba(43, 110, 79, 0.1);
+    }
+    .btn {
+      width: 100%;
+      background: #1e4d6e;
+      border: none;
+      padding: 14px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+    }
+    .btn-primary {
+      background: #2b6e4f;
+      box-shadow: 0 4px 8px rgba(43, 110, 79, 0.2);
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #cbdde9;
+      color: #2c3f4f;
+    }
+    .btn-wa {
+      background: #25D366;
+    }
+
+    .search-wrapper {
+      background: white;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      padding: 5px 16px;
+      border: 1px solid #e2edf2;
+      margin-bottom: 24px;
+    }
+    .search-wrapper i {
+      color: #8ba3bc;
+    }
+    .search-wrapper input {
+      border: none;
+      padding: 14px 10px;
+      background: transparent;
+    }
+
+    .book-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .book-item {
+      background: white;
+      border-radius: 24px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+      border: 1px solid #eef3f5;
+    }
+    .book-icon {
+      background: #eef7f0;
+      width: 56px;
+      height: 56px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: #2b6e4f;
+    }
+    .book-icon img {
+      width: 56px;
+      height: 56px;
+      border-radius: 28px;
+      object-fit: cover;
+    }
+    .book-info {
+      flex: 1;
+    }
+    .book-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .book-sub {
+      font-size: 0.75rem;
+      color: #6c8dab;
+      margin-top: 4px;
+    }
+    .book-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .icon-btn {
+      background: #f0f4f9;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .detail-cover {
+      background: #eef2f0;
+      border-radius: 32px;
+      padding: 28px;
+      text-align: center;
+      font-size: 3.2rem;
+      margin-bottom: 20px;
+    }
+    .detail-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .desc-text {
+      line-height: 1.5;
+      color: #2c4b66;
+      margin: 16px 0 24px;
+      background: #fafcfd;
+      padding: 16px;
+      border-radius: 24px;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .action-buttons .btn {
+      margin: 0;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 20px 22px;
+      border-top: 1px solid #e2eef2;
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #98aebe;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-item i {
+      font-size: 1.5rem;
+    }
+    .nav-item.active {
+      color: #2b6e4f;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 24px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .radio-option input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+    }
+    .toast-msg {
+      position: fixed;
+      bottom: 80px;
+      left: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: white;
+      padding: 12px;
+      border-radius: 60px;
+      text-align: center;
+      font-size: 0.8rem;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .toast-msg.show {
+      opacity: 1;
+    }
+    .whatsapp-hint {
+      font-size: 0.7rem;
+      color: #25D366;
+      margin-top: 6px;
+    }
+    @media (max-width: 480px) {
+      .page { padding: 16px 14px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HALAMAN 1: Mulai / Beranda -->
+  <div id="pageHome" class="page active-page">
+    <div class="header-logo">
+      <div class="logo">📚 Book<span style="color:#2b6e4f;">Cycle</span></div>
+      <div class="tagline">Kampus Berkelanjutan</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 32px 20px;">
+      <div style="font-size: 4rem; margin-bottom: 8px;">📖🔄</div>
+      <h2 style="margin: 12px 0 8px;">Sirkulasi Buku</h2>
+      <p style="color: #4a627a; margin-bottom: 24px;">Lebih Mudah & Berkelanjutan</p>
+      <button class="btn btn-primary" id="startExploreBtn"><i class="fas fa-rocket"></i> Mulai Jelajahi</button>
+      <button class="btn btn-outline" id="goToLoginBtnHome"><i class="fas fa-sign-in-alt"></i> Sudah punya akun? Login</button>
+    </div>
+  </div>
+
+  <!-- HALAMAN 2: LOGIN -->
+  <div id="pageLogin" class="page">
+    <div class="header-logo">
+      <div class="logo">📘 BookCycle</div>
+    </div>
+    <div class="card">
+      <h2>Welcome Back 👋</h2>
+      <p style="color:#5e7a93; margin-bottom:24px;">Login dengan akun kamu</p>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-envelope"></i> Email</div>
+        <input type="email" id="loginEmail" placeholder="mahasiswa@kampus.ac.id" value="user@bookcycle.id">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-lock"></i> Password</div>
+        <input type="password" id="loginPassword" placeholder="••••••" value="123456">
+      </div>
+      <button class="btn btn-primary" id="doLoginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+    </div>
+  </div>
+
+  <!-- HALAMAN 3: HOME / TEMUKAN BUKU (Koleksi) -->
+  <div id="pageHomeBooks" class="page">
+    <div class="header-logo">
+      <div class="logo">📖 Temukan Buku</div>
+      <div class="tagline" id="userGreeting">👤 Belum login</div>
+    </div>
+    <div class="search-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search buku..." autocomplete="off">
+    </div>
+    <div id="booksContainer" class="book-grid"></div>
+  </div>
+
+  <!-- HALAMAN 4: DETAIL BUKU -->
+  <div id="pageDetail" class="page">
+    <div class="header-logo">
+      <div class="logo">📄 Detail Buku</div>
+      <button id="backToHomeFromDetail" style="background:none; border:none; font-size:1.2rem; color:#2b6e4f;"><i class="fas fa-arrow-left"></i> Kembali</button>
+    </div>
+    <div id="detailContent"></div>
+  </div>
+
+  <!-- HALAMAN 5: TAMBAH BUKU (dengan nomor WhatsApp pemilik) -->
+  <div id="pageAddBook" class="page">
+    <div class="header-logo">
+      <div class="logo">📝 Tambah Buku</div>
+      <div class="tagline">Bagikan buku kamu</div>
+    </div>
+    <div class="card">
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-book"></i> Nama Buku</div>
+        <input type="text" id="bookTitleInput" placeholder="Contoh: Filsafat Nusantara">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-user-pen"></i> Penulis</div>
+        <input type="text" id="bookAuthorInput" placeholder="Nama penulis">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fab fa-whatsapp"></i> No. WhatsApp Pemilik</div>
+        <input type="tel" id="ownerWhatsapp" placeholder="628xxxxxxxxxx (tanpa + atau spasi)">
+        <div class="whatsapp-hint"><i class="fab fa-whatsapp"></i> Masukkan nomor WhatsApp aktif untuk dihubungi pembeli/peminjam</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-image"></i> Gambar Buku (URL)</div>
+        <input type="text" id="bookImageUrlInput" placeholder="https://... atau kosongkan">
+        <div class="image-preview" id="imagePreviewContainer" style="display:none; margin-top:10px;">
+          <img id="imagePreview" src="" alt="Preview" style="max-width:100px; border-radius:12px;">
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-align-left"></i> Deskripsi Buku</div>
+        <textarea id="bookDescInput" placeholder="Ceritakan tentang buku ini..."></textarea>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-boxes"></i> Stok</div>
+        <input type="number" id="bookStockInput" value="1" min="1">
+      </div>
+      <button class="btn btn-primary" id="submitNewBookBtn"><i class="fas fa-plus-circle"></i> Tambahkan Buku</button>
+      <button class="btn btn-outline" id="cancelAddBookBtn"><i class="fas fa-times"></i> Batal</button>
+    </div>
+  </div>
+
+  <!-- HALAMAN 6: FORM PEMINJAMAN (Data diri peminjam) -->
+  <div id="pageBorrowForm" class="page">
+    <div class="header-logo">
+      <div class="logo">📋 Form Peminjaman</div>
+      <div class="tagline">Isi data diri</div>
+    </div>
+    <div class="card" id="borrowBookInfo"></div>
+    <div class="card">
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-user"></i> Nama Lengkap</div>
+        <input type="text" id="borrowerName" placeholder="Nama lengkap sesuai KTP">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-envelope"></i> Email</div>
+        <input type="email" id="borrowerEmail" placeholder="email@domain.com">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-phone"></i> No. HP</div>
+        <input type="tel" id="borrowerPhone" placeholder="08xx-xxxx-xxxx">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-map-marker-alt"></i> Alamat</div>
+        <textarea id="borrowerAddress" rows="2" placeholder="Alamat lengkap"></textarea>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-calendar-alt"></i> Tanggal Pinjam</div>
+        <input type="date" id="borrowDate">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-calendar-check"></i> Tanggal Pengembalian</div>
+        <input type="date" id="returnDate">
+        <div class="date-note" style="font-size:0.7rem; color:#6c8dab; margin-top:6px;"><i class="fas fa-info-circle"></i> Minimal 7 hari, maksimal 30 hari dari tanggal pinjam</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-truck"></i> Metode Pengambilan</div>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="pickupMethod" value="ambil_ditempat"> Ambil di Tempat</label>
+          <label class="radio-option"><input type="radio" name="pickupMethod" value="cod"> COD (Bayar di Tempat)</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="submitBorrowBtn"><i class="fab fa-whatsapp"></i> Konfirmasi & Chat via WhatsApp</button>
+      <button class="btn btn-outline" id="cancelBorrowBtn"><i class="fas fa-arrow-left"></i> Batal</button>
+    </div>
+  </div>
+
+  <!-- HALAMAN 7: FORM PEMBELIAN (Data diri pembeli) -->
+  <div id="pageBuyForm" class="page">
+    <div class="header-logo">
+      <div class="logo">🛒 Form Pembelian</div>
+      <div class="tagline">Isi data diri untuk pembelian</div>
+    </div>
+    <div class="card" id="buyBookInfo"></div>
+    <div class="card">
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-user"></i> Nama Lengkap</div>
+        <input type="text" id="buyerName" placeholder="Nama lengkap sesuai KTP">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-envelope"></i> Email</div>
+        <input type="email" id="buyerEmail" placeholder="email@domain.com">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-phone"></i> No. HP</div>
+        <input type="tel" id="buyerPhone" placeholder="08xx-xxxx-xxxx">
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-map-marker-alt"></i> Alamat</div>
+        <textarea id="buyerAddress" rows="2" placeholder="Alamat lengkap untuk pengiriman"></textarea>
+      </div>
+      <div class="input-group">
+        <div class="input-label"><i class="fas fa-truck"></i> Metode Pengambilan</div>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="buyPickupMethod" value="ambil_ditempat"> Ambil di Tempat</label>
+          <label class="radio-option"><input type="radio" name="buyPickupMethod" value="cod"> COD (Bayar di Tempat)</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="submitBuyBtn"><i class="fab fa-whatsapp"></i> Konfirmasi & Chat via WhatsApp</button>
+      <button class="btn btn-outline" id="cancelBuyBtn"><i class="fas fa-arrow-left"></i> Batal</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item" data-nav="home"><i class="fas fa-home"></i><span>Beranda</span></button>
+    <button class="nav-item" data-nav="login"><i class="fas fa-user-circle"></i><span>Akun</span></button>
+    <button class="nav-item" data-nav="books"><i class="fas fa-book-open"></i><span>Koleksi</span></button>
+    <button class="nav-item" data-nav="addBook"><i class="fas fa-plus-circle"></i><span>Tambah</span></button>
+  </div>
+
+  <div id="toastMsg" class="toast-msg"></div>
+
+  <script>
+    // Data buku awal dengan ownerWhatsapp
+    let booksData = [
+      { id: 1, title: "Bumi dan Manusia", penulis: "Andrea Hirata", deskripsi: "Novel inspiratif tentang perjuangan dan persahabatan di tengah keterbatasan.", stok: 3, imageUrl: "", coverIcon: "🌍", ownerWhatsapp: "628123456789" },
+      { id: 2, title: "Filsafat Ilmu", penulis: "Prof. R. Suroso", deskripsi: "Buku fundamental memahami dasar-dasar keilmuan.", stok: 2, imageUrl: "", coverIcon: "📘", ownerWhatsapp: "628123456789" },
+      { id: 3, title: "Clean Code & Software", penulis: "Robert C. Martin", deskripsi: "Panduan menulis kode yang bersih.", stok: 1, imageUrl: "", coverIcon: "💻", ownerWhatsapp: "628123456789" },
+      { id: 4, title: "Ekonomi Sirkular", penulis: "Ellen MacArthur", deskripsi: "Mengulik ekonomi daur ulang dan berkelanjutan.", stok: 4, imageUrl: "", coverIcon: "🔄", ownerWhatsapp: "628123456789" },
+      { id: 5, title: "Design Thinking", penulis: "Tim Brown", deskripsi: "Metode inovatif untuk memecahkan masalah.", stok: 2, imageUrl: "", coverIcon: "🎨", ownerWhatsapp: "628123456789" }
+    ];
+    let nextId = 6;
+    let currentUser = null;
+    let currentDetailBook = null;
+    let pendingBorrowBook = null;
+    let pendingBuyBook = null;
+    let activePageId = "pageHome";
+
+    const pages = {
+      home: document.getElementById("pageHome"),
+      login: document.getElementById("pageLogin"),
+      books: document.getElementById("pageHomeBooks"),
+      detail: document.getElementById("pageDetail"),
+      addBook: document.getElementById("pageAddBook"),
+      borrowForm: document.getElementById("pageBorrowForm"),
+      buyForm: document.getElementById("pageBuyForm")
+    };
+
+    const navButtons = document.querySelectorAll(".nav-item");
+    const toast = document.getElementById("toastMsg");
+
+    function showToast(msg, duration = 2000) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), duration);
+    }
+
+    function setActivePage(pageId) {
+      Object.keys(pages).forEach(key => pages[key].classList.remove("active-page"));
+      pages[pageId].classList.add("active-page");
+      activePageId = pageId;
+      
+      let activeNavValue = "";
+      if (pageId === "home") activeNavValue = "home";
+      else if (pageId === "login") activeNavValue = "login";
+      else if (pageId === "books") activeNavValue = "books";
+      else if (pageId === "addBook") activeNavValue = "addBook";
+      
+      navButtons.forEach(btn => {
+        const navVal = btn.getAttribute("data-nav");
+        if (navVal && activeNavValue === navVal) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+      
+      if (pageId === "books") renderBooksList();
+      if (pageId === "home") updateHomeGreeting();
+      if (pageId === "addBook") resetAddBookForm();
+    }
+
+    function updateHomeGreeting() {
+      const greetingSpan = document.getElementById("userGreeting");
+      if (greetingSpan) {
+        if (currentUser) greetingSpan.innerHTML = `<i class="fas fa-check-circle"></i> ${currentUser.email.split('@')[0]}`;
+        else greetingSpan.innerHTML = `<i class="fas fa-user"></i> Belum login`;
+      }
+    }
+
+    function renderBooksList(filterText = "") {
+      const container = document.getElementById("booksContainer");
+      if (!container) return;
+      let filtered = [...booksData];
+      if (filterText.trim()) {
+        const kw = filterText.toLowerCase();
+        filtered = booksData.filter(b => b.title.toLowerCase().includes(kw) || b.penulis.toLowerCase().includes(kw));
+      }
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="card" style="text-align:center;">📭 Buku tidak ditemukan.</div>`;
+        return;
+      }
+      container.innerHTML = filtered.map(book => {
+        return `
+          <div class="book-item" data-book-id="${book.id}">
+            <div class="book-icon">${book.imageUrl ? `<img src="${book.imageUrl}" onerror="this.style.display='none';this.parentElement.innerHTML='${book.coverIcon || '📖'}'">` : (book.coverIcon || '📖')}</div>
+            <div class="book-info">
+              <div class="book-title">${book.title}</div>
+              <div class="book-sub">${book.penulis} • Stok: ${book.stok}</div>
+            </div>
+            <div class="book-actions">
+              <button class="icon-btn view-detail-btn" data-id="${book.id}"><i class="fas fa-info-circle"></i> Detail</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.querySelectorAll('.view-detail-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = parseInt(btn.getAttribute('data-id'));
+          const buku = booksData.find(b => b.id === id);
+          if (buku) showBookDetail(buku);
+        });
+      });
+    }
+
+    function showBookDetail(book) {
+      currentDetailBook = book;
+      const detailDiv = document.getElementById("detailContent");
+      const coverHtml = book.imageUrl ? `<img src="${book.imageUrl}" alt="${book.title}" style="max-width:150px; border-radius:20px;" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:4rem;\'>${book.coverIcon || '📖'}</span>'">` : `<span style="font-size:4rem;">${book.coverIcon || '📖'}</span>`;
+      detailDiv.innerHTML = `
+        <div class="detail-cover">${coverHtml}</div>
+        <div class="detail-title">${book.title}</div>
+        <div style="font-weight:500;">Penulis: ${book.penulis}</div>
+        <div style="font-size:0.85rem; margin:4px 0 8px;">Sisa stok: ${book.stok} eksemplar</div>
+        <div class="desc-text"><strong>Deskripsi:</strong><br>${book.deskripsi}</div>
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="actionPinjamBtn" ${book.stok <= 0 ? 'disabled' : ''}><i class="fas fa-hand-holding-heart"></i> Pinjam</button>
+          <button class="btn btn-primary" id="actionBeliBtn" ${book.stok <= 0 ? 'disabled' : ''}><i class="fas fa-shopping-cart"></i> Beli</button>
+        </div>
+      `;
+      setActivePage("detail");
+      
+      document.getElementById("actionPinjamBtn")?.addEventListener("click", () => {
+        if (!currentUser) { showToast("🔐 Login dulu untuk meminjam", 1500); setActivePage("login"); return; }
+        if (book.stok > 0) {
+          pendingBorrowBook = book;
+          setupBorrowForm(book);
+          setActivePage("borrowForm");
+        } else {
+          showToast("Stok habis, tidak bisa dipinjam", 1500);
+        }
+      });
+      
+      document.getElementById("actionBeliBtn")?.addEventListener("click", () => {
+        if (!currentUser) { showToast("🔐 Login dulu untuk membeli", 1500); setActivePage("login"); return; }
+        if (book.stok > 0) {
+          pendingBuyBook = book;
+          setupBuyForm(book);
+          setActivePage("buyForm");
+        } else {
+          showToast("Stok habis, tidak bisa dibeli", 1500);
+        }
+      });
+    }
+
+    // Setup form peminjaman
+    function setupBorrowForm(book) {
+      const infoDiv = document.getElementById("borrowBookInfo");
+      infoDiv.innerHTML = `<div style="display:flex; align-items:center; gap:12px;"><div style="font-size:2rem;">${book.imageUrl ? `<img src="${book.imageUrl}" style="width:50px;height:50px;border-radius:12px;object-fit:cover;">` : (book.coverIcon || '📖')}</div><div><strong>${book.title}</strong><br>Penulis: ${book.penulis}</div></div>`;
+      
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      document.getElementById("borrowDate").value = todayStr;
+      
+      const minReturn = new Date(today);
+      minReturn.setDate(today.getDate() + 7);
+      const minReturnStr = minReturn.toISOString().split('T')[0];
+      document.getElementById("returnDate").value = minReturnStr;
+      document.getElementById("returnDate").min = minReturnStr;
+      
+      const maxReturnDate = new Date(today);
+      maxReturnDate.setDate(today.getDate() + 30);
+      document.getElementById("returnDate").max = maxReturnDate.toISOString().split('T')[0];
+      
+      const borrowDateInput = document.getElementById("borrowDate");
+      const returnDateInput = document.getElementById("returnDate");
+      const updateReturnDateLimits = () => {
+        const borrowVal = borrowDateInput.value;
+        if (borrowVal) {
+          const borrowDateObj = new Date(borrowVal);
+          const minDate = new Date(borrowDateObj);
+          minDate.setDate(borrowDateObj.getDate() + 7);
+          const maxDate = new Date(borrowDateObj);
+          maxDate.setDate(borrowDateObj.getDate() + 30);
+          returnDateInput.min = minDate.toISOString().split('T')[0];
+          returnDateInput.max = maxDate.toISOString().split('T')[0];
+          if (returnDateInput.value < returnDateInput.min) returnDateInput.value = returnDateInput.min;
+          if (returnDateInput.value > returnDateInput.max) returnDateInput.value = returnDateInput.max;
+        }
+      };
+      borrowDateInput.onchange = updateReturnDateLimits;
+      
+      if (currentUser) document.getElementById("borrowerEmail").value = currentUser.email;
+      else document.getElementById("borrowerEmail").value = "";
+      
+      document.getElementById("borrowerName").value = "";
+      document.getElementById("borrowerPhone").value = "";
+      document.getElementById("borrowerAddress").value = "";
+      document.querySelectorAll('input[name="pickupMethod"]').forEach(r => r.checked = false);
+    }
+
+    // Setup form pembelian
+    function setupBuyForm(book) {
+      const infoDiv = document.getElementById("buyBookInfo");
+      infoDiv.innerHTML = `<div style="display:flex; align-items:center; gap:12px;"><div style="font-size:2rem;">${book.imageUrl ? `<img src="${book.imageUrl}" style="width:50px;height:50px;border-radius:12px;object-fit:cover;">` : (book.coverIcon || '📖')}</div><div><strong>${book.title}</strong><br>Penulis: ${book.penulis}<br><span style="color:#2b6e4f;">Harga: Sesuai kesepakatan dengan pemilik</span></div></div>`;
+      
+      if (currentUser) {
+        document.getElementById("buyerEmail").value = currentUser.email;
+      } else {
+        document.getElementById("buyerEmail").value = "";
+      }
+      document.getElementById("buyerName").value = "";
+      document.getElementById("buyerPhone").value = "";
+      document.getElementById("buyerAddress").value = "";
+      document.querySelectorAll('input[name="buyPickupMethod"]').forEach(r => r.checked = false);
+    }
+
+    // Fungsi untuk redirect ke WhatsApp
+    function sendToWhatsApp(ownerNumber, buyerData, bookData, transactionType, pickupMethod, borrowDate = null, returnDate = null) {
+      let cleanNumber = ownerNumber.toString().replace(/\D/g, '');
+      if (cleanNumber.startsWith('0')) cleanNumber = '62' + cleanNumber.substring(1);
+      if (!cleanNumber.startsWith('62')) cleanNumber = '62' + cleanNumber;
+      
+      const metodeText = pickupMethod === 'ambil_ditempat' ? 'Ambil di Tempat' : 'COD (Bayar di Tempat)';
+      
+      let message = '';
+      if (transactionType === 'borrow') {
+        message = `*📖 PEMINJAMAN BUKU - BOOKCYCLE*%0A%0A*Halo kak, saya ingin meminjam buku Anda!*%0A%0A📚 *Detail Buku:*%0A${bookData.title} - ${bookData.penulis}%0A%0A👤 *Data Peminjam:*%0ANama: ${buyerData.name}%0AEmail: ${buyerData.email}%0ANo. HP: ${buyerData.phone}%0AAlamat: ${buyerData.address}%0A%0A📅 *Periode Peminjaman:*%0ATanggal Pinjam: ${borrowDate}%0ATanggal Kembali: ${returnDate}%0A(Lama pinjam: min 7 hari, max 30 hari)%0A%0A🚚 *Metode Pengambilan:* ${metodeText}%0A%0A_*Mohon konfirmasi ketersediaan buku. Terima kasih!*_`;
+      } else {
+        message = `*🛒 PEMBELIAN BUKU - BOOKCYCLE*%0A%0A*Halo kak, saya ingin membeli buku Anda!*%0A%0A📚 *Detail Buku:*%0A${bookData.title} - ${bookData.penulis}%0A%0A👤 *Data Pembeli:*%0ANama: ${buyerData.name}%0AEmail: ${buyerData.email}%0ANo. HP: ${buyerData.phone}%0AAlamat: ${buyerData.address}%0A%0A🚚 *Metode Pengambilan:* ${metodeText}%0A%0A_*Mohon konfirmasi ketersediaan dan harga buku. Terima kasih!*_`;
+      }
+      window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
+    }
+
+    function submitBorrowRequest() {
+      if (!pendingBorrowBook) return;
+      const name = document.getElementById("borrowerName").value.trim();
+      const email = document.getElementById("borrowerEmail").value.trim();
+      const phone = document.getElementById("borrowerPhone").value.trim();
+      const address = document.getElementById("borrowerAddress").value.trim();
+      const borrowDate = document.getElementById("borrowDate").value;
+      const returnDate = document.getElementById("returnDate").value;
+      const pickupMethodRadio = document.querySelector('input[name="pickupMethod"]:checked');
+      
+      if (!name) { showToast("Nama lengkap harus diisi", 1500); return; }
+      if (!email) { showToast("Email harus diisi", 1500); return; }
+      if (!phone) { showToast("No. HP harus diisi", 1500); return; }
+      if (!address) { showToast("Alamat harus diisi", 1500); return; }
+      if (!borrowDate) { showToast("Tanggal pinjam harus diisi", 1500); return; }
+      if (!returnDate) { showToast("Tanggal pengembalian harus diisi", 1500); return; }
+      if (!pickupMethodRadio) { showToast("Pilih metode pengambilan", 1500); return; }
+      
+      const borrowDateObj = new Date(borrowDate);
+      const returnDateObj = new Date(returnDate);
+      const diffDays = Math.ceil((returnDateObj - borrowDateObj) / (1000 * 60 * 60 * 24));
+      if (diffDays < 7) { showToast("Minimal masa pinjam 7 hari", 1500); return; }
+      if (diffDays > 30) { showToast("Maksimal masa pinjam 30 hari", 1500); return; }
+      
+      if (!pendingBorrowBook.ownerWhatsapp) { showToast("Nomor WhatsApp pemilik tidak tersedia", 1500); return; }
+      
+      if (pendingBorrowBook.stok > 0) {
+        pendingBorrowBook.stok--;
+        sendToWhatsApp(pendingBorrowBook.ownerWhatsapp, { name, email, phone, address }, { title: pendingBorrowBook.title, penulis: pendingBorrowBook.penulis }, 'borrow', pickupMethodRadio.value, borrowDate, returnDate);
+        showToast(`✅ Permintaan peminjaman terkirim! Menuju WhatsApp pemilik buku.`, 3000);
+        renderBooksList(document.getElementById("searchInput")?.value || "");
+        if (currentDetailBook && currentDetailBook.id === pendingBorrowBook.id) showBookDetail(pendingBorrowBook);
+        setActivePage("books");
+        pendingBorrowBook = null;
+      } else { showToast("Stok buku sudah habis", 1500); setActivePage("books"); }
+    }
+    
+    function submitBuyRequest() {
+      if (!pendingBuyBook) return;
+      const name = document.getElementById("buyerName").value.trim();
+      const email = document.getElementById("buyerEmail").value.trim();
+      const phone = document.getElementById("buyerPhone").value.trim();
+      const address = document.getElementById("buyerAddress").value.trim();
+      const pickupMethodRadio = document.querySelector('input[name="buyPickupMethod"]:checked');
+      
+      if (!name) { showToast("Nama lengkap harus diisi", 1500); return; }
+      if (!email) { showToast("Email harus diisi", 1500); return; }
+      if (!phone) { showToast("No. HP harus diisi", 1500); return; }
+      if (!address) { showToast("Alamat harus diisi", 1500); return; }
+      if (!pickupMethodRadio) { showToast("Pilih metode pengambilan", 1500); return; }
+      
+      if (!pendingBuyBook.ownerWhatsapp) { showToast("Nomor WhatsApp pemilik tidak tersedia", 1500); return; }
+      
+      if (pendingBuyBook.stok > 0) {
+        pendingBuyBook.stok--;
+        sendToWhatsApp(pendingBuyBook.ownerWhatsapp, { name, email, phone, address }, { title: pendingBuyBook.title, penulis: pendingBuyBook.penulis }, 'buy', pickupMethodRadio.value);
+        showToast(`✅ Permintaan pembelian terkirim! Menuju WhatsApp pemilik buku.`, 3000);
+        renderBooksList(document.getElementById("searchInput")?.value || "");
+        if (currentDetailBook && currentDetailBook.id === pendingBuyBook.id) showBookDetail(pendingBuyBook);
+        setActivePage("books");
+        pendingBuyBook = null;
+      } else { showToast("Stok buku sudah habis", 1500); setActivePage("books"); }
+    }
+    
+    function cancelBorrow() { pendingBorrowBook = null; setActivePage("books"); }
+    function cancelBuy() { pendingBuyBook = null; setActivePage("books"); }
+
+    function addNewBook() {
+      if (!currentUser) { showToast("Login dulu untuk tambah buku", 1500); setActivePage("login"); return; }
+      const title = document.getElementById("bookTitleInput").value.trim();
+      const penulis = document.getElementById("bookAuthorInput").value.trim();
+      const ownerWhatsapp = document.getElementById("ownerWhatsapp").value.trim();
+      const imageUrl = document.getElementById("bookImageUrlInput").value.trim();
+      const deskripsi = document.getElementById("bookDescInput").value.trim();
+      const stok = parseInt(document.getElementById("bookStockInput").value) || 1;
+      
+      if (!title) { showToast("Nama buku harus diisi", 1500); return; }
+      if (!penulis) { showToast("Penulis harus diisi", 1500); return; }
+      if (!ownerWhatsapp) { showToast("Nomor WhatsApp pemilik harus diisi", 1500); return; }
+      if (!deskripsi) { showToast("Deskripsi buku harus diisi", 1500); return; }
+      
+      const cleanWhatsapp = ownerWhatsapp.replace(/\D/g, '');
+      if (cleanWhatsapp.length < 9) { showToast("Nomor WhatsApp tidak valid (minimal 9 digit)", 1500); return; }
+      
+      const newBook = { id: nextId++, title, penulis, deskripsi, stok, imageUrl: (imageUrl.startsWith("http") ? imageUrl : ""), coverIcon: "📚", ownerWhatsapp: cleanWhatsapp };
+      booksData.unshift(newBook);
+      showToast(`📖 Buku "${title}" berhasil ditambahkan!`, 2000);
+      resetAddBookForm();
+      renderBooksList("");
+      setActivePage("books");
+    }
+
+    function resetAddBookForm() {
+      document.getElementById("bookTitleInput").value = "";
+      document.getElementById("bookAuthorInput").value = "";
+      document.getElementById("ownerWhatsapp").value = "";
+      document.getElementById("bookImageUrlInput").value = "";
+      document.getElementById("bookDescInput").value = "";
+      document.getElementById("bookStockInput").value = "1";
+      document.getElementById("imagePreviewContainer").style.display = "none";
+    }
+
+    function handleLogin() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const pwd = document.getElementById("loginPassword").value.trim();
+      if (!email || !pwd) { showToast("Email dan password harus diisi", 1500); return; }
+      currentUser = { email: email };
+      showToast(`Selamat datang, ${email.split('@')[0]}!`, 1500);
+      renderBooksList("");
+      updateHomeGreeting();
+      setActivePage("books");
+      document.getElementById("searchInput").value = "";
+    }
+
+    function initSearch() {
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) searchInput.addEventListener("input", (e) => { if (activePageId === "books") renderBooksList(e.target.value); });
+    }
+    
+    function setupNavigation() {
+      navButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const navTo = btn.getAttribute("data-nav");
+          if (navTo === "home") setActivePage("home");
+          else if (navTo === "login") setActivePage("login");
+          else if (navTo === "books") {
+            if (!currentUser) { showToast("Silakan login untuk melihat koleksi", 1500); setActivePage("login"); }
+            else { renderBooksList(document.getElementById("searchInput")?.value || ""); setActivePage("books"); }
+          } else if (navTo === "addBook") {
+            if (!currentUser) { showToast("Login dulu untuk menambah buku", 1500); setActivePage("login"); }
+            else setActivePage("addBook");
+          }
+        });
+      });
+      document.getElementById("startExploreBtn")?.addEventListener("click", () => { currentUser ? setActivePage("books") : setActivePage("login"); });
+      document.getElementById("goToLoginBtnHome")?.addEventListener("click", () => setActivePage("login"));
+      document.getElementById("doLoginBtn")?.addEventListener("click", handleLogin);
+      document.getElementById("backToHomeFromDetail")?.addEventListener("click", () => { currentUser ? setActivePage("books") : setActivePage("home"); });
+      document.getElementById("submitNewBookBtn")?.addEventListener("click", addNewBook);
+      document.getElementById("cancelAddBookBtn")?.addEventListener("click", () => setActivePage("books"));
+      document.getElementById("submitBorrowBtn")?.addEventListener("click", submitBorrowRequest);
+      document.getElementById("cancelBorrowBtn")?.addEventListener("click", cancelBorrow);
+      document.getElementById("submitBuyBtn")?.addEventListener("click", submitBuyRequest);
+      document.getElementById("cancelBuyBtn")?.addEventListener("click", cancelBuy);
+      
+      const imageUrlInput = document.getElementById("bookImageUrlInput");
+      const previewContainer = document.getElementById("imagePreviewContainer");
+      const previewImg = document.getElementById("imagePreview");
+      if (imageUrlInput) {
+        imageUrlInput.addEventListener("input", (e) => {
+          const url = e.target.value.trim();
+          if (url && (url.startsWith("http") || url.startsWith("data:"))) {
+            previewImg.src = url;
+            previewContainer.style.display = "block";
+          } else previewContainer.style.display = "none";
+        });
+      }
+    }
+
+    function init() {
+      setupNavigation();
+      initSearch();
+      renderBooksList("");
+      updateHomeGreeting();
+      setActivePage("home");
+    }
+    init();
+  </script>
+</body>
+</html>
